@@ -1,0 +1,42 @@
+{
+    "RecipeFormatVersion": "2020-01-25",
+    "ComponentName": "subData",
+    "ComponentVersion": "1.0.0",
+    "ComponentType": "aws.greengrass.generic",
+    "ComponentDescription": "This is a AWS IoT Greengrass component that is subscribed the data from MQTT",
+    "ComponentPublisher": "Chan Soo Hwang",
+    "ComponentConfiguration": {
+      "DefaultConfiguration": {
+        "accessControl": {
+          "aws.greengrass.ipc.mqttproxy": {
+            "getSolarData:pubsub:1": {
+              "policyDescription": "Allows access to subscribe to all topics.",
+              "operations": [
+                "aws.greengrass#SubscribeToIoTCore"
+              ],
+              "resources": [
+                "*"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Manifests": [
+      {
+        "Platform": {
+          "os": "linux"
+        },
+        "Name": "Linux",
+        "Lifecycle": {
+          "Run": "python3 {artifacts:path}/subData.py"
+        },
+        "Artifacts": [
+          {
+            "Uri": "s3://mypi-s3-greengrass-artifact/gg_python/1.0.0/subData.py"
+          }
+        ]
+      }
+    ],
+    "Lifecycle": {}
+  }
