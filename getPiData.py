@@ -11,44 +11,13 @@ import RPi.GPIO as GPIO
 import Adafruit_DHT
 import os
 
-from awscrt.io import (
-    ClientBootstrap,
-    DefaultHostResolver,
-    EventLoopGroup,
-    SocketDomain,
-    SocketOptions,
+import awsiot.greengrasscoreipc
+from awsiot.greengrasscoreipc.model import (
+    QOS,
+    PublishToIoTCoreRequest
 )
-from awsiot.eventstreamrpc import Connection, LifecycleHandler, MessageAmendment
-import awsiot.greengrasscoreipc.client as client
-from awsiot.greengrasscoreipc.model import PublishToIoTCoreRequest, QOS
-
 TIMEOUT = 10
 
-
-class IPCUtils:
-    def connect(self):
-        elg = EventLoopGroup()
-        resolver = DefaultHostResolver(elg)
-        bootstrap = ClientBootstrap(elg, resolver)
-        socket_options = SocketOptions()
-        socket_options.domain = SocketDomain.Local
-        amender = MessageAmendment.create_static_authtoken_amender(os.getenv("SVCUID"))
-        hostname = os.getenv("AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT")
-        connection = Connection(
-            host_name=hostname,
-            port=8033,
-            bootstrap=bootstrap,
-            socket_options=socket_options,
-            connect_message_amender=amender,
-        )
-        self.lifecycle_handler = LifecycleHandler()
-        connect_future = connection.connect(self.lifecycle_handler)
-        connect_future.result(TIMEOUT)
-        return connection
-
-ipc_utils = IPCUtils()
-connection = ipc_utils.connect()
-ipc_client = client.GreengrassCoreIPCClient(connection)
 
 
 logger = logging.getLogger(__name__)
@@ -62,7 +31,7 @@ def getSensorData():
  
 def publishMessage_mqtt(mqtt_topic, payload):
     try:
-        
+        ipc_client = awsiot.greengrasscoreipc.connect()
         message = json.dumps(payload)
         qos = QOS.AT_LEAST_ONCE
 

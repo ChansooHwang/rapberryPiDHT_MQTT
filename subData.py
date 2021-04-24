@@ -1,4 +1,6 @@
 import time
+import logging
+import sys
 
 import awsiot.greengrasscoreipc
 import awsiot.greengrasscoreipc.client as client
@@ -12,6 +14,11 @@ TIMEOUT = 10
 
 ipc_client = awsiot.greengrasscoreipc.connect()
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+logger.info("Start Program")
+
 class StreamHandler(client.SubscribeToIoTCoreStreamHandler):
     def __init__(self):
         super().__init__()
@@ -21,6 +28,7 @@ class StreamHandler(client.SubscribeToIoTCoreStreamHandler):
             message = str(event.message.payload, "utf-8")
             # Handle message.
             print(message)
+            logger.info(message)
         except:
             traceback.print_exc()
 
