@@ -18,7 +18,7 @@ from awsiot.greengrasscoreipc.model import (
 )
 TIMEOUT = 10
 
-
+ipc_client = awsiot.greengrasscoreipc.connect()
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -31,7 +31,7 @@ def getSensorData():
  
 def publishMessage_mqtt(mqtt_topic, payload):
     try:
-        ipc_client = awsiot.greengrasscoreipc.connect()
+        
         message = json.dumps(payload)
         qos = QOS.AT_LEAST_ONCE
 
